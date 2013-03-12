@@ -69,7 +69,9 @@ void Hill::encryption()
             c = key*p;            
             buffer="";
             for(int i=0;i<size;i++)
-                buffer += c(i,0);
+                buffer += int(c(i,0))%26+'a';
+            
+            std::cout<<buffer<<std::endl;
             outputFile << buffer;
         }
         outputFile << '\n';
