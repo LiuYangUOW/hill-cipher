@@ -1,5 +1,6 @@
 #include <string>
 #include <iostream>
+#include <fstream>
 #include "Eigen/Core"
 #include "Eigen/Dense"
 
@@ -9,19 +10,20 @@ class Hill
 {
     private:
         int size;//size of matrix key        
-        MatrixXd key;
+        MatrixXd key;        
         
     public:        
         //setter and getter
         Hill();
         Hill(int);
-        double getMatrix(int, int);
+        
+        double getKey(int, int);
         MatrixXd getKey();
-        void setMatrix(int, int, int);
         
-        //prepare
-        std::string prepare(std::string);
-        
+        void setKey(int, int, int);
+        void setSize(int);
+                
+        std::string prepare(std::string);        
         void encryption();
         void decryption();                
 };
