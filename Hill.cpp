@@ -1,5 +1,7 @@
 #include "Hill.h"
 #include <cctype>
+#include "Eigen/LU"
+#include "Eigen/Dense"
 
 //using namespace std;
 
@@ -52,7 +54,7 @@ void Hill::encryption()
     std::string tmp;
     std::string buffer="";
     
-    inputFile.open("plaint.txt");
+    inputFile.open("plain.txt");
     outputFile.open("cipher.txt");
     
     while( getline(inputFile, tmp) )
@@ -71,7 +73,7 @@ void Hill::encryption()
             for(int i=0;i<size;i++)
                 buffer += int(c(i,0))%26+'a';
             
-            std::cout<<buffer<<std::endl;
+            //std::cout<<buffer<<std::endl;
             outputFile << buffer;
         }
         outputFile << '\n';
@@ -80,5 +82,58 @@ void Hill::encryption()
 
 void Hill::decryption()
 {
+    std::ifstream inputFile;
+    std::ofstream outputFile;
+    std::string tmp;
+    std::string buffer="";
     
+    inputFile.open("cipher.txt");
+    outputFile.open("plain.txt");
+    
+    while( getline(inputFile, tmp) )
+    {
+        for(unsigned int i=0;i<tmp.length();i+=size)
+        {
+            MatrixXd c= MatrixXd(size,1);
+            MatrixXd p;
+            MatrixXd in_key;            
+            int det_1;              
+            int det = key.determinant();
+            int temp;
+            buffer="";
+                                    
+            if(det<0)
+                det += 26;
+            
+            for(int j=0;j<size;j++)
+                if( i+j < tmp.length() )
+                    c(j,0) = tmp.at(i+j)-'a';
+                                                
+            for(int cnt=1;cnt<26;cnt++)
+                if( ((cnt*det)%26) == 1)
+                {
+                    det_1 = cnt;                    
+                    break;
+                }                        
+            
+            std::cout<<det<<"  "<<det_1<<std::endl;
+            
+            in_key = det_1*det*key.inverse();                                
+            p = in_key*c;                        
+            
+            for(int i=0;i<size;i++)
+            {                
+                temp = int(p(i,0))%26;                
+                if( temp >= 0)
+                    buffer += temp+'a';
+                else
+                    buffer += temp+26+'a';
+            }
+            outputFile << buffer;
+            std::cout<<buffer;
+        }
+        outputFile << '\n';        
+        std::cout<<std::endl;
+        
+    }
 }
