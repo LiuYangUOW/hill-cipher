@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include "Eigen/Core"
-#include "Eigen/Dense"
 
 using namespace Eigen;
 
@@ -24,6 +23,7 @@ class Hill
         void setSize(int);
                 
         std::string prepare(std::string);        
+        int check_key(int);
         void encryption();
         void decryption();                
 };
