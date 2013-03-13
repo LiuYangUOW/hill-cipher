@@ -56,10 +56,21 @@ void Hill::encryption()
     
     inputFile.open("plain.txt");
     outputFile.open("cipher.txt");
+        
+    if(!check_key(key.determinant()))
+        {
+            std::cout<<"invalid key";
+            return;
+        }
     
     while( getline(inputFile, tmp) )
     {
         tmp = prepare(tmp);
+        
+        if( tmp.length()%size != 0)
+            for(unsigned int i=0;i<(tmp.length()%size);i++)
+                tmp+='a';
+                
         for(unsigned int i=0;i<tmp.length();i+=size)
         {
             MatrixXd p= MatrixXd(size,1);
@@ -71,12 +82,14 @@ void Hill::encryption()
             c = key*p;            
             buffer="";
             for(int i=0;i<size;i++)
-                buffer += int(c(i,0))%26+'a';
+            {
+                float temp2 = c(i,0);
+                buffer += int(temp2)%26+'a';
+            }
             
-            //std::cout<<buffer<<std::endl;
             outputFile << buffer;
         }
-        outputFile << '\n';
+        outputFile << '\n';        
     }        
 }
 
@@ -96,7 +109,7 @@ void Hill::decryption()
         {
             MatrixXd c= MatrixXd(size,1);
             MatrixXd p;
-            MatrixXd in_key;            
+            MatrixXd adj_key;            
             int det_1;              
             int det = key.determinant();
             int temp;
@@ -105,35 +118,45 @@ void Hill::decryption()
             if(det<0)
                 det += 26;
             
+            det_1 = check_key(det);
+            if(det_1==0)
+            {
+                std::cout<<"invalid key";
+                return;
+            }
+            
             for(int j=0;j<size;j++)
                 if( i+j < tmp.length() )
                     c(j,0) = tmp.at(i+j)-'a';
-                                                
-            for(int cnt=1;cnt<26;cnt++)
-                if( ((cnt*det)%26) == 1)
-                {
-                    det_1 = cnt;                    
-                    break;
-                }                        
             
-            std::cout<<det<<"  "<<det_1<<std::endl;
             
-            in_key = det_1*det*key.inverse();                                
-            p = in_key*c;                        
-            
+                
+            adj_key = (det_1*det)*key.inverse();
+            p = adj_key*c;
+                                    
             for(int i=0;i<size;i++)
-            {                
-                temp = int(p(i,0))%26;                
+            {
+                float temp2 = p(i,0);
+                temp = int(temp2)%26;
                 if( temp >= 0)
                     buffer += temp+'a';
                 else
                     buffer += temp+26+'a';
             }
             outputFile << buffer;
-            std::cout<<buffer;
-        }
-        outputFile << '\n';        
-        std::cout<<std::endl;
-        
+        }        
+        outputFile << '\n';
     }
+}
+
+int Hill::check_key(int det)
+{
+    for(int cnt=1;cnt<26;cnt++)
+    {
+        if( ((cnt*det)%26) == 1)
+            return cnt;
+        if(cnt==25)
+            return 0;
+    }
+    return 0;
 }
