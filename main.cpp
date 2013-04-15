@@ -12,9 +12,6 @@ int main()
         
     h.setSize(size);
     
-    h.setKey(0,1,4);
-    h.setKey(1,0,1); h.setKey(1,1,3);
-    
     for(int i=0;i<size;i++)
         for(int j=0;j<size;j++)
         {
